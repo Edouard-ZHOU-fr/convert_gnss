@@ -15,6 +15,10 @@ class OdomToPoseConverter(Node):
         self.csv_filename = 'Navette_traj.csv'
         self.init_csv()
 
+        #frequence = 1/record_interval
+        self.record_interval = 0.1  #(second) 10hz fréquence de enregistrement le traj 
+        self.last_record_time = 0.0  #
+
         self.subscription = self.create_subscription(
             Odometry,
             '/localization/kinematic_state',  # topic origine
@@ -53,6 +57,11 @@ class OdomToPoseConverter(Node):
             if (transform.header.frame_id == self.source_frame and 
                 transform.child_frame_id == self.target_frame):
                 
+                stamp = transform.header.stamp
+                current_time = stamp.sec + stamp.nanosec * 1e-9
+                
+                if (current_time - self.last_record_time) < self.record_interval:
+                    continue
                 # timestamp = transform.header.stamp.sec + transform.header.stamp.nanosec * 1e-9
                 
                 # translation
@@ -72,7 +81,8 @@ class OdomToPoseConverter(Node):
                 with open(self.csv_filename, mode='a', newline='') as f:
                     writer = csv.writer(f)
                     writer.writerow([x, y, z, yaw_rad])
-            
+
+                self.last_record_time = current_time
                 break 
 
     def listener_callback(self, msg):
