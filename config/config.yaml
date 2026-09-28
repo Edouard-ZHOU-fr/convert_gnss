@@ -1,0 +1,4 @@
+/**:
+  ros__parameters:
+    # (second) periode d'enregistrement de Navette_traj.csv, frequence = 1/record_interval
+    record_interval: 1.0

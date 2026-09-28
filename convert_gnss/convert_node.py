@@ -16,7 +16,8 @@ class OdomToPoseConverter(Node):
         self.init_csv()
 
         #frequence = 1/record_interval
-        self.record_interval = 0.1  #(second) 10hz fréquence de enregistrement le traj 
+        # valeur lue dans config/config.yaml (1.0 = defaut si absent du yaml)
+        self.record_interval = self.declare_parameter('record_interval', 1.0).value  #(second) 1hz fréquence de enregistrement le traj
         self.last_record_time = 0.0  #
 
         self.subscription = self.create_subscription(
